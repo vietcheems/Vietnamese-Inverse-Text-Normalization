@@ -1,7 +1,2 @@
 import pynini
-bruh = pynini.Fst()
-bruh |= pynini.cross('một', '1')
-bruh |= pynini.cross('hai', '2')
-bruh.rmepsilon()
-lattice = pynini.compose('một hai', bruh)
-print(lattice.string())
+print(pynini.string_file("/home/viet/wfst/nemo_text_processing/inverse_text_normalization/data/numbers/digit.tsv").optimize())
