@@ -41,19 +41,23 @@ class CardinalFst(GraphFst):
 
     def __init__(self):
         super().__init__(name="cardinal", kind="classify")
-        graph_zero = pynini.string_file(get_abs_path("data/numbers/zero.tsv"))
         graph_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        graph_ties = pynini.string_file(get_abs_path("data/numbers/ties.tsv"))
-        graph_teen = pynini.string_file(get_abs_path("data/numbers/teen.tsv"))
+        graph_digit_var = pynini.string_file(get_abs_path("data/numbers/digit_var.tsv"))
+        graph_digit_any = graph_digit | graph_digit_var
+        graph_digit_non_zero = graph_digit @ pynini.difference(NEMO_DIGIT, '0')
+        graph_digit_any_non_zero = graph_digit_any @ pynini.difference(NEMO_DIGIT, '0')
 
-        graph_hundred = pynini.cross("hundred", "")
+        graph_ten = pynini.string_file(get_abs_path("data/numbers/ten.tsv")) + pynini.union(graph_digit_any, pynutil.insert("0"))
+
+        graph_2_9_muoi = graph_digit_any_non_zero + delete_space 
+        graph_2_9_muoi += pynini.union(pynutil.delete("mươi"), pynini.cross('', '')) 
+        graph_2_9_muoi += pynini.union(delete_space + graph_digit_any_non_zero, pynutil.insert("0"))
+
+        graph_hundred = pynutil.delete("trăm")
 
         graph_hundred_component = pynini.union(graph_digit + delete_space + graph_hundred, pynutil.insert("0"))
-        graph_hundred_component += delete_space
-        graph_hundred_component += pynini.union(
-            graph_teen | pynutil.insert("00"),
-            (graph_ties | pynutil.insert("0")) + delete_space + (graph_digit | pynutil.insert("0")),
-        )
+        # graph_hundred_component += delete_space
+        graph_hundred_component += pynini.union(delete_space + pynini.union(graph_ten, graph_2_9_muoi), pynutil.insert("00"))
 
         graph_hundred_component_at_least_one_none_zero_digit = graph_hundred_component @ (
             pynini.closure(NEMO_DIGIT) + (NEMO_DIGIT - "0") + pynini.closure(NEMO_DIGIT)
@@ -115,7 +119,7 @@ class CardinalFst(GraphFst):
             pynutil.delete(pynini.closure("0")) + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT), "0"
         )
 
-        labels_exception = [num_to_word(x) for x in range(0, 13)]
+        labels_exception = [num_to_word(x) for x in range(0, 10)]
         graph_exception = pynini.union(*labels_exception)
 
         graph = pynini.cdrewrite(pynutil.delete("and"), NEMO_SPACE, NEMO_SPACE, NEMO_SIGMA) @ graph

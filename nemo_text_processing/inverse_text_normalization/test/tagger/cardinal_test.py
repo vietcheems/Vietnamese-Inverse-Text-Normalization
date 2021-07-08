@@ -1,7 +1,5 @@
 import unittest
 import pynini
-import sys
-print(sys.path)
 from nemo_text_processing.inverse_text_normalization.taggers.cardinal import CardinalFst
 class TestCardinalFst(unittest.TestCase):
     graph = CardinalFst().fst
@@ -18,10 +16,7 @@ class TestCardinalFst(unittest.TestCase):
             "ba mốt"
         ]
         for word in word_list:
-            self.assertEqual(word, self.convert_str(word))
+            self.assertEqual(word, convert_str)
     
     def convert_str(self, s):
         return pynini.project(self.graph @ pynini.accep(s), "output")
-
-if __name__ == "__main__":
-    TestCardinalFst().test_2_digits()
