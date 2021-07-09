@@ -53,9 +53,9 @@ class CardinalFst(GraphFst):
 
         graph_ten = pynini.string_file(get_abs_path("data/numbers/ten.tsv")) + pynini.union(graph_digit_any, pynutil.insert("0"))
 
-        graph_2_9_muoi = graph_digit_any_non_zero + delete_space 
-        graph_2_9_muoi += pynini.union(pynutil.delete("mươi"), pynini.cross('', '')) 
-        graph_2_9_muoi += pynini.union(delete_space + graph_digit_any_non_zero, pynutil.insert("0"))
+        graph_2_9_muoi = graph_digit_non_zero + delete_space + pynini.union(
+            pynutil.delete("mươi") + pynini.union(delete_space + graph_digit_any, pynutil.insert("0")),
+            graph_digit_any_non_zero)
 
 
         graph_hundred_component = pynini.union(graph_digit + delete_space + graph_hundred_end, pynutil.insert("0"))
