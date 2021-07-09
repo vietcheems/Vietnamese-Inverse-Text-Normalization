@@ -1,13 +1,14 @@
 import unittest
 import pynini
 from nemo_text_processing.inverse_text_normalization.taggers.cardinal import CardinalFst
+from pynini.lib.rewrite import rewrites
 class TestCardinalFst(unittest.TestCase):
     graph = CardinalFst().fst
     
     def test_2_digits(self):
         cardinal = CardinalFst()
         word_list = [
-            "mười",
+            "mười ",
             "mười hai",
             "mười lăm",
             "hai mươi",
@@ -16,7 +17,4 @@ class TestCardinalFst(unittest.TestCase):
             "ba mốt"
         ]
         for word in word_list:
-            self.assertEqual(word, convert_str)
-    
-    def convert_str(self, s):
-        return pynini.project(self.graph @ pynini.accep(s), "output")
+            print(word, rewrites(word, self.graph))
