@@ -9,13 +9,8 @@ class TestCardinalFst(unittest.TestCase):
         cardinal = CardinalFst()
         word_list = [
             "âm hai",
-            "mười hai",
-            "mười lăm",
-            "hai mươi",
-            "bốn mươi lăm",
-            "chín bảy",
-            "âm ba mốt",
-            "hai năm"
+            "bốn lăm",
+            "chín triệu sáu trăm nghìn ba trăm hai mốt"
         ]
         for word in word_list:
             print(word + " | " + top_rewrite(word, self.graph))
