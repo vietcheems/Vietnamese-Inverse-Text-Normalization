@@ -46,9 +46,9 @@ class CardinalFst(GraphFst):
         graph_digit_any_non_zero = graph_digit_any @ pynini.difference(NEMO_DIGIT, '0')
 
         graph_hundred_end = pynutil.delete("trăm")
-        graph_thousands_end = pynutil.delete("nghìn")
+        graph_thousands_end = pynutil.delete("nghìn") | pynutil.delete("ngàn")
         graph_million_end = pynutil.delete("triệu")
-        graph_billion_end = pynini.union(pynutil.delete("tỉ"), pynutil.delete("tỷ"))
+        graph_billion_end = pynutil.delete("tỉ") | pynutil.delete("tỷ")
 
         graph_ten = pynini.string_file(get_abs_path("data/numbers/ten.tsv")) + pynini.union(delete_space + graph_digit_any, pynutil.insert("0"))
 
