@@ -19,6 +19,7 @@ from nemo_text_processing.text_normalization.graph_utils import GraphFst
 class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
+        e.g hai phần ba -> fraction { numerator: "hai" denominator: "ba" }
     """
 
     def __init__(self):
