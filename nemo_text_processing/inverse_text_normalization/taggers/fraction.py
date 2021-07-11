@@ -13,15 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import GraphFst
+import pynini
+from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_space, delete_extra_space
 
 
 class FractionFst(GraphFst):
     """
     Finite state transducer for classifying fraction
-        e.g hai phần ba -> fraction { numerator: "hai" denominator: "ba" }
+        e.g hai phần ba -> fraction { numerator: "2" denominator: "3" }
+        e.g hai tư trên bảy -> fraction { numerator: "24" denominator: "7" }
+
     """
 
-    def __init__(self):
+    def __init__(self, cardinal: GraphFst):
         super().__init__(name="fraction", kind="classify")
-        # integer_part # numerator # denominator
+        cardinal_graph = cardinal.graph_no_exception
+        slash = pynutil.delete("phần") | pynutil.delete("trên")
+        graph = (
+            pynutil.insert("numerator: \"") + cardinal_graph + pynutil.insert("\"")
+            + delete_space + slash + delete_extra_space 
+            + pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
+        )
+        final_graph = self.add_tokens(graph)
+        self.fst = final_graph.optimize()
+
+        
