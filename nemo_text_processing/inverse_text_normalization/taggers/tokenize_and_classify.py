@@ -15,7 +15,7 @@
 
 from nemo_text_processing.inverse_text_normalization.taggers.cardinal import CardinalFst
 # from nemo_text_processing.inverse_text_normalization.taggers.date import DateFst
-# from nemo_text_processing.inverse_text_normalization.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.taggers.decimal import DecimalFst
 # from nemo_text_processing.inverse_text_normalization.taggers.electronic import ElectronicFst
 # from nemo_text_processing.inverse_text_normalization.taggers.measure import MeasureFst
 # from nemo_text_processing.inverse_text_normalization.taggers.money import MoneyFst
@@ -52,8 +52,8 @@ class ClassifyFst(GraphFst):
         # ordinal = OrdinalFst(cardinal)
         # ordinal_graph = ordinal.fst
 
-        # decimal = DecimalFst(cardinal)
-        # decimal_graph = decimal.fst
+        decimal = DecimalFst(cardinal)
+        decimal_graph = decimal.fst
 
         # measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal).fst
         # date_graph = DateFst(ordinal=ordinal).fst
@@ -69,7 +69,7 @@ class ClassifyFst(GraphFst):
             pynutil.add_weight(whitelist_graph, 1.01)
         #     | pynutil.add_weight(time_graph, 1.1)
         #     | pynutil.add_weight(date_graph, 1.09)
-        #     | pynutil.add_weight(decimal_graph, 1.1)
+            | pynutil.add_weight(decimal_graph, 1.1)
         #     | pynutil.add_weight(measure_graph, 1.1)
             | pynutil.add_weight(cardinal_graph, 1.1)
         #     | pynutil.add_weight(ordinal_graph, 1.1)
