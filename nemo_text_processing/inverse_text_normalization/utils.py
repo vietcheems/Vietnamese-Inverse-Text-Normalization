@@ -15,9 +15,9 @@
 import os
 from typing import Union
 
-import inflect
+# import inflect
 
-_inflect = inflect.engine()
+# _inflect = inflect.engine()
 
 
 def num_to_word(x: Union[str, int]):
@@ -31,7 +31,7 @@ def num_to_word(x: Union[str, int]):
     """
     if isinstance(x, int):
         x = str(x)
-        x = _inflect.number_to_words(str(x)).replace("-", " ").replace(",", "")
+        # x = _inflect.number_to_words(str(x)).replace("-", " ").replace(",", "")
     return x
 
 
