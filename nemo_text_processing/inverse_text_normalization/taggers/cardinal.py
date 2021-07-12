@@ -73,17 +73,17 @@ class CardinalFst(GraphFst):
 
         graph_thousands = pynini.union(
             graph_hundred_component + delete_space + graph_thousands_end,
-            pynutil.insert("000", weight=0.1),
+            pynutil.insert("000"),
         )
 
         graph_million = pynini.union(
             graph_hundred_component + delete_space + graph_million_end,
-            pynutil.insert("000", weight=0.1),
+            pynutil.insert("000"),
         )
 
         graph_billion = pynini.union(
             graph_hundred_component + delete_space + graph_billion_end,
-            pynutil.insert("000", weight=0.1),
+            pynutil.insert("000"),
         )
         # graph_trillion = pynini.union(
         #     graph_hundred_component_at_least_one_none_zero_digit + delete_space + pynutil.delete("trillion"),
