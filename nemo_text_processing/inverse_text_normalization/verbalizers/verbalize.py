@@ -23,6 +23,7 @@ from nemo_text_processing.inverse_text_normalization.verbalizers.ordinal import 
 from nemo_text_processing.inverse_text_normalization.verbalizers.telephone import TelephoneFst
 from nemo_text_processing.inverse_text_normalization.verbalizers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.verbalizers.whitelist import WhiteListFst
+from nemo_text_processing.inverse_text_normalization.verbalizers.consec_num import ConsecutiveNumberFst
 from nemo_text_processing.text_normalization.graph_utils import GraphFst
 
 
@@ -47,6 +48,8 @@ class VerbalizeFst(GraphFst):
         whitelist_graph = WhiteListFst().fst
         telephone_graph = TelephoneFst().fst
         electronic_graph = ElectronicFst().fst
+        consec_num_graph = ConsecutiveNumberFst().fst
+
         graph = (
             time_graph
             | date_graph
@@ -58,5 +61,6 @@ class VerbalizeFst(GraphFst):
             | whitelist_graph
             | telephone_graph
             | electronic_graph
+            | consec_num_graph
         )
         self.fst = graph

@@ -26,6 +26,8 @@ from nemo_text_processing.inverse_text_normalization.taggers.punctuation import 
 from nemo_text_processing.inverse_text_normalization.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.taggers.word import WordFst
 from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.inverse_text_normalization.taggers.consec_num import ConsecutiveNumberFst
+
 
 try:
     import pynini
@@ -64,6 +66,7 @@ class ClassifyFst(GraphFst):
         punct_graph = PunctuationFst().fst
         # electronic_graph = ElectronicFst().fst
         # telephone_graph = TelephoneFst().fst
+        consec_num_graph = ConsecutiveNumberFst().fst
 
         classify = (
             pynutil.add_weight(whitelist_graph, 1.01)
@@ -76,6 +79,7 @@ class ClassifyFst(GraphFst):
         #     | pynutil.add_weight(money_graph, 1.1)
         #     | pynutil.add_weight(telephone_graph, 1.1)
         #     | pynutil.add_weight(electronic_graph, 1.1)
+            | pynutil.add_weight(consec_num_graph, 1.11)
             | pynutil.add_weight(word_graph, 100)
         )
 
