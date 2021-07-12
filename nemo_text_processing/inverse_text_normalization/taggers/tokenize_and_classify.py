@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from nemo_text_processing.inverse_text_normalization.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.taggers.fraction import FractionFst
 # from nemo_text_processing.inverse_text_normalization.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.taggers.decimal import DecimalFst
 # from nemo_text_processing.inverse_text_normalization.taggers.electronic import ElectronicFst
@@ -57,6 +58,7 @@ class ClassifyFst(GraphFst):
         decimal = DecimalFst(cardinal)
         decimal_graph = decimal.fst
 
+        fraction_graph = FractionFst(cardinal).fst
         # measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal).fst
         # date_graph = DateFst(ordinal=ordinal).fst
         word_graph = WordFst().fst
@@ -70,6 +72,7 @@ class ClassifyFst(GraphFst):
 
         classify = (
             pynutil.add_weight(whitelist_graph, 1.01)
+            | pynutil.add_weight(fraction_graph, 1.1)
         #     | pynutil.add_weight(time_graph, 1.1)
         #     | pynutil.add_weight(date_graph, 1.09)
             | pynutil.add_weight(decimal_graph, 1.1)
