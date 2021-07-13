@@ -29,10 +29,13 @@ class FractionFst(GraphFst):
     def __init__(self, cardinal: GraphFst):
         super().__init__(name="fraction", kind="classify")
         cardinal_graph = cardinal.graph_no_exception
+        negative = pynini.union(pynini.cross("âm", "true"), pynini.cross("trừ", "true"))
         slash = pynutil.delete("phần") | pynutil.delete("trên")
         graph = (
-            pynutil.insert("numerator: \"") + cardinal_graph + pynutil.insert("\"")
+            pynini.closure(pynutil.insert("negative_numerator: \"")  + negative + pynutil.insert("\"") + delete_extra_space, 0 , 1)
+            + pynutil.insert("numerator: \"") + cardinal_graph + pynutil.insert("\"")
             + delete_space + slash + delete_extra_space 
+            + pynini.closure(pynutil.insert("negative_denominator: \"")  + negative + pynutil.insert("\"") + delete_extra_space, 0 , 1)
             + pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
         )
         final_graph = self.add_tokens(graph)
