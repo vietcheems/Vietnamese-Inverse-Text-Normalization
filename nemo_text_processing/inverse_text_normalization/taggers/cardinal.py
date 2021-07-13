@@ -83,43 +83,43 @@ class CardinalFst(GraphFst):
             graph_hundred_component_at_least_one_digit + pynini.cross(" ", "") + graph_thousands_end,
             pynutil.insert("000"),
         )
-        graph_thousands += pynutil.insert(" ")
+        graph_thousands += pynutil.insert(".")
 
         graph_million = pynini.union(
             graph_hundred_component_at_least_one_digit + delete_space_compulsory + graph_million_end,
             pynutil.insert("000"),
         )
-        graph_million += pynutil.insert(" ")
+        graph_million += pynutil.insert(".")
 
         graph_billion = pynini.union(
             graph_hundred_component_at_least_one_digit + delete_space_compulsory + graph_billion_end,
             pynutil.insert("000"),
         )
-        graph_billion += pynutil.insert(" ")
+        graph_billion += pynutil.insert(".")
 
         graph_trillion = pynini.union(
             graph_hundred_component_at_least_one_digit + delete_space_compulsory + graph_trillion_end,
             pynutil.insert("000"),
         )
-        graph_trillion += pynutil.insert(" ")
+        graph_trillion += pynutil.insert(".")
 
         graph_quadrillion = pynini.union(
             graph_hundred_component_at_least_one_digit + delete_space_compulsory + graph_quadrillion_end,
             pynutil.insert("000"),
         )
-        graph_quadrillion += pynutil.insert(" ")
+        graph_quadrillion += pynutil.insert(".")
 
         graph_quintillion = pynini.union(
             graph_hundred_component_at_least_one_digit + delete_space_compulsory + graph_quintillion_end,
             pynutil.insert("000"),
         )
-        graph_quintillion += pynutil.insert(" ")
+        graph_quintillion += pynutil.insert(".")
 
         graph_sextillion = pynini.union(
             graph_hundred_component_at_least_one_digit + delete_space_compulsory + graph_sextillion_end,
             pynutil.insert("000"),
         )
-        graph_sextillion += pynutil.insert(" ")
+        graph_sextillion += pynutil.insert(".")
 
         graph = (
             graph_sextillion
@@ -141,10 +141,10 @@ class CardinalFst(GraphFst):
 
         self.graph_before_remove_zero = graph
         remove_leading_zero_graph = pynini.union(
-            pynini.closure(pynutil.delete("000" + NEMO_SPACE)) + pynutil.delete(pynini.closure("0")) 
+            pynini.closure(pynutil.delete("000" + ".")) + pynutil.delete(pynini.closure("0")) 
             + pynini.difference(NEMO_DIGIT, "0") + pynini.closure(NEMO_DIGIT, 0, 2) 
-            + pynini.closure(NEMO_SPACE + pynini.closure(NEMO_DIGIT, 3, 3)),
-            pynini.cross(pynini.closure("000" + NEMO_SPACE) + pynini.closure("0", 1, 3), "0")
+            + pynini.closure("." + pynini.closure(NEMO_DIGIT, 3, 3)),
+            pynini.cross(pynini.closure("000" + ".") + pynini.closure("0", 1, 3), "0")
         )
         self.remove_leading_zero_graph = remove_leading_zero_graph
         graph = graph @ remove_leading_zero_graph
