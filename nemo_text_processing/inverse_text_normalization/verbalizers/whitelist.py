@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, NEMO_SIGMA, GraphFst, delete_space_optional
 
 try:
     import pynini
@@ -35,7 +35,7 @@ class WhiteListFst(GraphFst):
         super().__init__(name="whitelist", kind="verbalize")
         graph = (
             pynutil.delete("name:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")

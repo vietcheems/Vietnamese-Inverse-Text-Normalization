@@ -15,7 +15,7 @@
 
 import pynini
 from pynini.lib import pynutil
-from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_space, delete_extra_space
+from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_space_optional, delete_extra_space
 
 
 class FractionFst(GraphFst):
@@ -34,7 +34,7 @@ class FractionFst(GraphFst):
         graph = (
             pynini.closure(pynutil.insert("negative_numerator: \"")  + negative + pynutil.insert("\"") + delete_extra_space, 0 , 1)
             + pynutil.insert("numerator: \"") + cardinal_graph + pynutil.insert("\"")
-            + delete_space + slash + delete_extra_space 
+            + delete_space_optional + slash + delete_extra_space 
             + pynini.closure(pynutil.insert("negative_denominator: \"")  + negative + pynutil.insert("\"") + delete_extra_space, 0 , 1)
             + pynutil.insert("denominator: \"") + cardinal_graph + pynutil.insert("\"")
         )

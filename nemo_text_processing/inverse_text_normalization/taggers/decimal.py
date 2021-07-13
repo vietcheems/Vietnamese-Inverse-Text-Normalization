@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from nemo_text_processing.inverse_text_normalization.utils import get_abs_path
-from nemo_text_processing.text_normalization.graph_utils import NEMO_DIGIT, GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_DIGIT, GraphFst, delete_extra_space, delete_space_optional
 
 try:
     import pynini
@@ -69,7 +69,7 @@ class DecimalFst(GraphFst):
         graph_decimal = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_decimal |= pynini.string_file(get_abs_path("data/numbers/digit_var.tsv"))
 
-        graph_decimal = pynini.closure(graph_decimal + delete_space) + graph_decimal
+        graph_decimal = pynini.closure(graph_decimal + delete_space_optional) + graph_decimal
         self.graph = graph_decimal
 
         comma = pynutil.delete("phẩy")

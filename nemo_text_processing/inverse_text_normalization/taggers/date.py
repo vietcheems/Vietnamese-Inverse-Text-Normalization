@@ -19,7 +19,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
     delete_extra_space,
-    delete_space,
+    delete_space_optional,
 )
 
 try:
@@ -52,7 +52,7 @@ def _get_ties_graph():
     Transducer for 20-99 e.g
     twenty three -> 23
     """
-    graph = ties_graph + (delete_space + graph_digit | pynutil.insert("0"))
+    graph = ties_graph + (delete_space_optional + graph_digit | pynutil.insert("0"))
     return graph
 
 
@@ -61,11 +61,11 @@ def _get_range_graph():
     Transducer for decades (1**0s, 2**0s), centuries (2*00s, 1*00s), millennia (2000s)
     """
     graph_ties = _get_ties_graph()
-    graph = (graph_ties | graph_teen) + delete_space + pynini.cross("hundreds", "00s")
-    graph |= pynini.cross("two", "2") + delete_space + pynini.cross("thousands", "000s")
+    graph = (graph_ties | graph_teen) + delete_space_optional + pynini.cross("hundreds", "00s")
+    graph |= pynini.cross("two", "2") + delete_space_optional + pynini.cross("thousands", "000s")
     graph |= (
         (graph_ties | graph_teen)
-        + delete_space
+        + delete_space_optional
         + (pynini.closure(NEMO_ALPHA, 1) + (pynini.cross("ies", "y") | pynutil.delete("s")))
         @ (graph_ties | pynini.cross("ten", "10"))
         + pynutil.insert("s")
@@ -81,20 +81,20 @@ def _get_year_graph():
 
     def _get_digits_graph():
         zero = pynini.cross((pynini.accep("oh") | pynini.accep("o")), "0")
-        graph = zero + delete_space + graph_digit
+        graph = zero + delete_space_optional + graph_digit
         graph.optimize()
         return graph
 
     def _get_thousands_graph():
         graph_ties = _get_ties_graph()
-        graph_hundred_component = (graph_digit + delete_space + pynutil.delete("hundred")) | pynutil.insert("0")
+        graph_hundred_component = (graph_digit + delete_space_optional + pynutil.delete("hundred")) | pynutil.insert("0")
         graph = (
             graph_digit
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("thousand")
-            + delete_space
+            + delete_space_optional
             + graph_hundred_component
-            + delete_space
+            + delete_space_optional
             + (graph_teen | graph_ties)
         )
         return graph
@@ -104,8 +104,8 @@ def _get_year_graph():
     graph_thousands = _get_thousands_graph()
     year_graph = (
         # 20 19, 40 12, 2012 - assuming no limit on the year
-        (graph_teen + delete_space + (graph_ties | graph_digits | graph_teen))
-        | (graph_ties + delete_space + (graph_ties | graph_digits | graph_teen))
+        (graph_teen + delete_space_optional + (graph_ties | graph_digits | graph_teen))
+        | (graph_ties + delete_space_optional + (graph_ties | graph_digits | graph_teen))
         | graph_thousands
     )
     year_graph.optimize()
@@ -147,9 +147,9 @@ class DateFst(GraphFst):
         graph_mdy = month_graph + optional_day_graph + optional_graph_year
         graph_dmy = (
             pynutil.delete("the")
-            + delete_space
+            + delete_space_optional
             + day_graph
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("of")
             + delete_extra_space
             + month_graph

@@ -44,7 +44,8 @@ try:
 
     NEMO_SIGMA = pynini.closure(NEMO_CHAR)
 
-    delete_space = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
+    delete_space_optional = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE))
+    delete_space_compulsory = pynutil.delete(pynini.closure(NEMO_WHITE_SPACE, 1))
     insert_space = pynutil.insert(" ")
     delete_extra_space = pynini.cross(pynini.closure(NEMO_WHITE_SPACE, 1), " ")
 
@@ -88,7 +89,7 @@ except (ModuleNotFoundError, ImportError):
 
     NEMO_SIGMA = None
 
-    delete_space = None
+    delete_space_optional = None
     insert_space = None
     delete_extra_space = None
 
@@ -206,11 +207,11 @@ class GraphFst:
         """
         res = (
             pynutil.delete(f"{self.name}")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("{")
-            + delete_space
+            + delete_space_optional
             + fst
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("}")
         )
         return res @ pynini.cdrewrite(pynini.cross(u"\u00A0", " "), "", "", NEMO_SIGMA)

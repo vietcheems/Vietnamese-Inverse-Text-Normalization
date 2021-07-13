@@ -19,7 +19,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
     convert_space,
-    delete_space,
+    delete_space_optional,
     insert_space,
 )
 
@@ -77,9 +77,9 @@ class TimeFst(GraphFst):
             + pynutil.insert("\"")
         )
         final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
-        final_suffix_optional = pynini.closure(delete_space + insert_space + final_suffix, 0, 1)
+        final_suffix_optional = pynini.closure(delete_space_optional + insert_space + final_suffix, 0, 1)
         final_time_zone_optional = pynini.closure(
-            delete_space
+            delete_space_optional
             + insert_space
             + pynutil.insert("zone: \"")
             + convert_space(time_zone_graph)
@@ -102,13 +102,13 @@ class TimeFst(GraphFst):
             final_graph_hour
             + pynutil.delete(".")
             + (pynutil.delete("00") | insert_space + final_graph_minute)
-            + delete_space
+            + delete_space_optional
             + insert_space
             + final_suffix
             + final_time_zone_optional
         )
         # 2 pm est
-        graph_h = final_graph_hour + delete_space + insert_space + final_suffix + final_time_zone_optional
+        graph_h = final_graph_hour + delete_space_optional + insert_space + final_suffix + final_time_zone_optional
         final_graph = (graph_hm | graph_h | graph_hm2).optimize()
 
         final_graph = self.add_tokens(final_graph)

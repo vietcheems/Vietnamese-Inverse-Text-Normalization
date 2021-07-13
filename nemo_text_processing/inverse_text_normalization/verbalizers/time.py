@@ -17,7 +17,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     NEMO_CHAR,
     NEMO_DIGIT,
     GraphFst,
-    delete_space,
+    delete_space_optional,
     insert_space,
 )
 
@@ -43,33 +43,33 @@ class TimeFst(GraphFst):
         add_leading_zero_to_double_digit = (NEMO_DIGIT + NEMO_DIGIT) | (pynutil.insert("0") + NEMO_DIGIT)
         hour = (
             pynutil.delete("hours:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_DIGIT, 1)
             + pynutil.delete("\"")
         )
         minute = (
             pynutil.delete("minutes:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_DIGIT, 1)
             + pynutil.delete("\"")
         )
         suffix = (
-            delete_space
+            delete_space_optional
             + insert_space
             + pynutil.delete("suffix:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
         )
         optional_suffix = pynini.closure(suffix, 0, 1)
         zone = (
-            delete_space
+            delete_space_optional
             + insert_space
             + pynutil.delete("zone:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
@@ -77,7 +77,7 @@ class TimeFst(GraphFst):
         optional_zone = pynini.closure(zone, 0, 1)
         graph = (
             hour @ add_leading_zero_to_double_digit
-            + delete_space
+            + delete_space_optional
             + pynutil.insert(":")
             + (minute @ add_leading_zero_to_double_digit)
             + optional_suffix

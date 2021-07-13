@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space_optional
 
 try:
     import pynini
@@ -37,7 +37,7 @@ class CardinalFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="cardinal", kind="verbalize", deterministic=deterministic)
 
-        self.optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "minus ") + delete_space, 0, 1)
+        self.optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "minus ") + delete_space_optional, 0, 1)
 
         if deterministic:
             integer = pynini.closure(NEMO_NOT_QUOTE, 1)
@@ -48,7 +48,7 @@ class CardinalFst(GraphFst):
                 + pynini.closure(NEMO_NOT_QUOTE)
             )
 
-        self.integer = delete_space + pynutil.delete("\"") + integer + pynutil.delete("\"")
+        self.integer = delete_space_optional + pynutil.delete("\"") + integer + pynutil.delete("\"")
         integer = pynutil.delete("integer:") + self.integer
 
         self.numbers = self.optional_sign + integer

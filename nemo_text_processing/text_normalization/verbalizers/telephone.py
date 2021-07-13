@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space_optional, insert_space
 
 try:
     import pynini
@@ -44,7 +44,7 @@ class TelephoneFst(GraphFst):
             pynutil.delete("country_code: \"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
-            + delete_space
+            + delete_space_optional
             + add_separator
             + insert_space,
             0,
@@ -54,7 +54,7 @@ class TelephoneFst(GraphFst):
         number_part = pynutil.delete("number_part: \"") + pynini.closure(NEMO_NOT_QUOTE, 1) + pynutil.delete("\"")
 
         optional_extension = pynini.closure(
-            delete_space
+            delete_space_optional
             + add_separator
             + insert_space
             + pynutil.delete("extension: \"")

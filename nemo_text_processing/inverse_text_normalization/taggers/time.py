@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     GraphFst,
     convert_space,
     delete_extra_space,
-    delete_space,
+    delete_space_optional,
     insert_space,
 )
 
@@ -72,15 +72,15 @@ class TimeFst(GraphFst):
             + (
                 pynutil.insert("00")
                 | oclock + pynutil.insert("00")
-                | pynutil.delete("o") + delete_space + graph_minute_single
+                | pynutil.delete("o") + delete_space_optional + graph_minute_single
                 | graph_minute_double
             )
             + pynutil.insert("\"")
         )
         final_suffix = pynutil.insert("suffix: \"") + convert_space(suffix_graph) + pynutil.insert("\"")
-        final_suffix_optional = pynini.closure(delete_space + insert_space + final_suffix, 0, 1)
+        final_suffix_optional = pynini.closure(delete_space_optional + insert_space + final_suffix, 0, 1)
         final_time_zone_optional = pynini.closure(
-            delete_space
+            delete_space_optional
             + insert_space
             + pynutil.insert("zone: \"")
             + convert_space(time_zone_graph)
@@ -98,7 +98,7 @@ class TimeFst(GraphFst):
             pynutil.insert("minutes: \"")
             + pynini.union(graph_minute_single, graph_minute_double, graph_minute_verbose)
             + pynutil.insert("\"")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("past")
             + delete_extra_space
             + final_graph_hour
@@ -108,7 +108,7 @@ class TimeFst(GraphFst):
             pynutil.insert("minutes: \"")
             + pynini.cross("quarter", "45")
             + pynutil.insert("\"")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete(pynini.union("to", "till"))
             + delete_extra_space
             + pynutil.insert("hours: \"")

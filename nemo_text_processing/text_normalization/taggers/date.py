@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     TO_LOWER,
     GraphFst,
     delete_extra_space,
-    delete_space,
+    delete_space_optional,
     insert_space,
 )
 
@@ -166,7 +166,7 @@ class DateFst(GraphFst):
         graph_mdy = (
             month_graph
             + optional_day_graph
-            + delete_space
+            + delete_space_optional
             + pynini.closure(pynutil.delete(","), 0, 1)
             + optional_graph_year
         )

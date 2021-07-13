@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     SINGULAR_TO_PLURAL,
     GraphFst,
     convert_space,
-    delete_space,
+    delete_space_optional,
 )
 
 try:
@@ -60,10 +60,10 @@ class MeasureFst(GraphFst):
         graph_unit = convert_space(graph_unit)
         optional_graph_negative = pynini.closure(pynutil.insert("negative: ") + pynini.cross("-", "\"true\" "), 0, 1)
 
-        graph_unit2 = pynini.cross("/", "per") + delete_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit
+        graph_unit2 = pynini.cross("/", "per") + delete_space_optional + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit
 
         optional_graph_unit2 = pynini.closure(
-            delete_space + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2, 0, 1,
+            delete_space_optional + pynutil.insert(NEMO_NON_BREAKING_SPACE) + graph_unit2, 0, 1,
         )
 
         unit_plural = (
@@ -80,7 +80,7 @@ class MeasureFst(GraphFst):
             pynutil.insert("decimal { ")
             + optional_graph_negative
             + decimal.final_graph_wo_negative
-            + delete_space
+            + delete_space_optional
             + pynutil.insert(" } ")
             + unit_plural
         )
@@ -90,7 +90,7 @@ class MeasureFst(GraphFst):
             + optional_graph_negative
             + pynutil.insert("integer: \"")
             + ((NEMO_SIGMA - "1") @ cardinal_graph)
-            + delete_space
+            + delete_space_optional
             + pynutil.insert("\"")
             + pynutil.insert(" } ")
             + unit_plural
@@ -101,7 +101,7 @@ class MeasureFst(GraphFst):
             + optional_graph_negative
             + pynutil.insert("integer: \"")
             + pynini.cross("1", "one")
-            + delete_space
+            + delete_space_optional
             + pynutil.insert("\"")
             + pynutil.insert(" } ")
             + unit_singular
@@ -146,7 +146,7 @@ class MeasureFst(GraphFst):
         )
 
         subgraph_fraction = (
-            pynutil.insert("fraction { ") + fraction.graph + delete_space + pynutil.insert(" } ") + unit_plural
+            pynutil.insert("fraction { ") + fraction.graph + delete_space_optional + pynutil.insert(" } ") + unit_plural
         )
 
         final_graph = (

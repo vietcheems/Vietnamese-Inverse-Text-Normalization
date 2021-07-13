@@ -16,7 +16,7 @@
 from nemo_text_processing.text_normalization.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
-    delete_space,
+    delete_space_optional,
     get_abs_path,
     insert_space,
 )
@@ -55,12 +55,12 @@ class MoneyFst(GraphFst):
 
         unit = (
             pynutil.delete("currency:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
-        graph = decimal.numbers + delete_space + pynutil.insert(" ") + unit
+        graph = decimal.numbers + delete_space_optional + pynutil.insert(" ") + unit
 
         if not deterministic:
             minor_currencies_singular = _get_minor_currencies("data/currency/currency_minor_one.tsv")
@@ -82,7 +82,7 @@ class MoneyFst(GraphFst):
 
             fractional_default = (
                 pynutil.delete("fractional_part:")
-                + delete_space
+                + delete_space_optional
                 + pynutil.delete("\"")
                 + ((pynini.closure(NEMO_NOT_QUOTE, 1) + minor_currencies_plural) | minor_currencies_singular)
                 + pynutil.delete("\"")
@@ -91,23 +91,23 @@ class MoneyFst(GraphFst):
             # $2.00 {two zero zero dollars} -> two dollars
             fractional_with_zeros = (
                 pynutil.delete("fractional_part:")
-                + delete_space
+                + delete_space_optional
                 + pynutil.delete("\"")
                 + pynini.cross('zero', '')
                 + pynini.closure(pynini.cross(' zero', ''))
-                + delete_space
+                + delete_space_optional
                 + pynutil.delete("\"")
-                + delete_space
+                + delete_space_optional
             )
 
             fractional = fractional_with_zeros | fractional_default
 
             graph |= (
                 decimal.integer
-                + delete_space
+                + delete_space_optional
                 + insert_space
                 + unit
-                + delete_space
+                + delete_space_optional
                 + insert_space
                 + pynini.closure(pynutil.insert("and "), 0, 1)
                 + fractional

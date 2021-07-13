@@ -26,7 +26,7 @@ from nemo_text_processing.inverse_text_normalization.taggers.punctuation import 
 # from nemo_text_processing.inverse_text_normalization.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.taggers.word import WordFst
-from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space_optional
 from nemo_text_processing.inverse_text_normalization.taggers.consec_num import ConsecutiveNumberFst
 
 
@@ -93,7 +93,7 @@ class ClassifyFst(GraphFst):
         )
 
         graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
-        graph = delete_space + graph + delete_space
+        graph = delete_space_optional + graph + delete_space_optional
 
 
         self.fst = graph.optimize()

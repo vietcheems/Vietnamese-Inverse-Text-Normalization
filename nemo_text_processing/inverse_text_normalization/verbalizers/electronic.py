@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space_optional
 
 try:
     import pynini
@@ -34,19 +34,19 @@ class ElectronicFst(GraphFst):
         super().__init__(name="electronic", kind="verbalize")
         user_name = (
             pynutil.delete("username:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
         domain = (
             pynutil.delete("domain:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
 
-        graph = user_name + delete_space + pynutil.insert("@") + domain
+        graph = user_name + delete_space_optional + pynutil.insert("@") + domain
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

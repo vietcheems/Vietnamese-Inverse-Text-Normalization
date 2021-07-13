@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space_optional
 
 try:
     import pynini
@@ -40,30 +40,30 @@ class MeasureFst(GraphFst):
         optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-"), 0, 1)
         unit = (
             pynutil.delete("units:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
-            + delete_space
+            + delete_space_optional
         )
         graph_decimal = (
             pynutil.delete("decimal {")
-            + delete_space
+            + delete_space_optional
             + optional_sign
-            + delete_space
+            + delete_space_optional
             + decimal.numbers
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("}")
         )
         graph_cardinal = (
             pynutil.delete("cardinal {")
-            + delete_space
+            + delete_space_optional
             + optional_sign
-            + delete_space
+            + delete_space_optional
             + cardinal.numbers
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("}")
         )
-        graph = (graph_cardinal | graph_decimal) + delete_space + pynutil.insert(" ") + unit
+        graph = (graph_cardinal | graph_decimal) + delete_space_optional + pynutil.insert(" ") + unit
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

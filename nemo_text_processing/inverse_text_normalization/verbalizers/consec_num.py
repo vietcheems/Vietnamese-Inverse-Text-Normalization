@@ -2,7 +2,7 @@ from nemo_text_processing.inverse_text_normalization.utils import get_abs_path
 from nemo_text_processing.text_normalization.graph_utils import (
     NEMO_DIGIT,
     GraphFst,
-    delete_space,
+    delete_space_optional,
 )
 import pynini
 from pynini.lib import pynutil

@@ -20,7 +20,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     GraphFst,
     convert_space,
     delete_extra_space,
-    delete_space,
+    delete_space_optional,
     get_singulars,
     insert_space,
 )
@@ -64,16 +64,16 @@ class MoneyFst(GraphFst):
             pynutil.insert("fractional_part: \"")
             + pynini.union(
                 pynutil.add_weight(((NEMO_SIGMA - "one") @ cardinal_graph), -0.7) @ add_leading_zero_to_double_digit
-                + delete_space
+                + delete_space_optional
                 + pynutil.delete("cents"),
-                pynini.cross("one", "01") + delete_space + pynutil.delete("cent"),
+                pynini.cross("one", "01") + delete_space_optional + pynutil.delete("cent"),
             )
             + pynutil.insert("\"")
         )
 
         optional_cents_standalone = pynini.closure(
-            delete_space
-            + pynini.closure(pynutil.delete("and") + delete_space, 0, 1)
+            delete_space_optional
+            + pynini.closure(pynutil.delete("and") + delete_space_optional, 0, 1)
             + insert_space
             + cents_standalone,
             0,

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space_optional
 from nemo_text_processing.text_normalization.taggers.cardinal import CardinalFst
 from nemo_text_processing.text_normalization.taggers.date import DateFst
 from nemo_text_processing.text_normalization.taggers.decimal import DecimalFst
@@ -102,6 +102,6 @@ class ClassifyFst(GraphFst):
         )
 
         graph = token_plus_punct + pynini.closure(delete_extra_space + token_plus_punct)
-        graph = delete_space + graph + delete_space
+        graph = delete_space_optional + graph + delete_space_optional
 
         self.fst = graph.optimize()

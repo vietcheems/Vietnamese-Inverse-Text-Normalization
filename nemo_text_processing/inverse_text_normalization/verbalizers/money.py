@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space_optional
 
 try:
     import pynini
@@ -38,11 +38,11 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="verbalize")
         unit = (
             pynutil.delete("currency:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
         )
-        graph = unit + delete_space + decimal.numbers
+        graph = unit + delete_space_optional + decimal.numbers
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

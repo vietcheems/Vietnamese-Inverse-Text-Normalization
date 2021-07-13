@@ -18,7 +18,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     NEMO_ALPHA,
     NEMO_NOT_QUOTE,
     GraphFst,
-    delete_space,
+    delete_space_optional,
     insert_space,
 )
 
@@ -47,7 +47,7 @@ class ElectronicFst(GraphFst):
         graph_symbols = pynini.string_file(get_abs_path("data/electronic/symbols.tsv")).optimize()
         user_name = (
             pynutil.delete("username:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + (
                 pynini.closure(
@@ -77,15 +77,15 @@ class ElectronicFst(GraphFst):
 
         domain = (
             pynutil.delete("domain:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + (pynutil.add_weight(server_common, 1.09) | pynutil.add_weight(server_default, 1.1))
             + (pynutil.add_weight(domain_common, 1.09) | pynutil.add_weight(domain_default, 1.1))
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
         )
 
-        graph = user_name + delete_space + pynutil.insert("at ") + delete_space + domain + delete_space
+        graph = user_name + delete_space_optional + pynutil.insert("at ") + delete_space_optional + domain + delete_space_optional
 
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

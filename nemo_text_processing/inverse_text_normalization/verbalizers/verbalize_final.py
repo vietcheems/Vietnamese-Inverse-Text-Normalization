@@ -15,7 +15,7 @@
 
 from nemo_text_processing.inverse_text_normalization.verbalizers.verbalize import VerbalizeFst
 from nemo_text_processing.inverse_text_normalization.verbalizers.word import WordFst
-from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space_optional
 
 try:
     import pynini
@@ -39,12 +39,12 @@ class VerbalizeFinalFst(GraphFst):
         types = verbalize | word
         graph = (
             pynutil.delete("tokens")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("{")
-            + delete_space
+            + delete_space_optional
             + types
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("}")
         )
-        graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
+        graph = delete_space_optional + pynini.closure(graph + delete_extra_space) + graph + delete_space_optional
         self.fst = graph

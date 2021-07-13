@@ -19,7 +19,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     GraphFst,
     convert_space,
     delete_extra_space,
-    delete_space,
+    delete_space_optional,
     get_singulars,
 )
 
@@ -57,16 +57,16 @@ class MeasureFst(GraphFst):
 
         unit_singular = convert_space(graph_unit_singular)
         unit_plural = convert_space(graph_unit_plural)
-        unit_misc = pynutil.insert("/") + pynutil.delete("per") + delete_space + convert_space(graph_unit_singular)
+        unit_misc = pynutil.insert("/") + pynutil.delete("per") + delete_space_optional + convert_space(graph_unit_singular)
 
         unit_singular = (
             pynutil.insert("units: \"")
-            + (unit_singular | unit_misc | pynutil.add_weight(unit_singular + delete_space + unit_misc, 0.01))
+            + (unit_singular | unit_misc | pynutil.add_weight(unit_singular + delete_space_optional + unit_misc, 0.01))
             + pynutil.insert("\"")
         )
         unit_plural = (
             pynutil.insert("units: \"")
-            + (unit_plural | unit_misc | pynutil.add_weight(unit_plural + delete_space + unit_misc, 0.01))
+            + (unit_plural | unit_misc | pynutil.add_weight(unit_plural + delete_space_optional + unit_misc, 0.01))
             + pynutil.insert("\"")
         )
 

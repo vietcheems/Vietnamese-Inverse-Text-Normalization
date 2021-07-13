@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space_optional, insert_space
 
 try:
     import pynini
@@ -37,12 +37,12 @@ class DecimalFst(GraphFst):
     def __init__(self, cardinal, deterministic: bool = True):
         super().__init__(name="decimal", kind="verbalize", deterministic=deterministic)
 
-        self.optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "minus ") + delete_space, 0, 1)
+        self.optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "minus ") + delete_space_optional, 0, 1)
         self.integer = pynutil.delete("integer_part:") + cardinal.integer
-        self.optional_integer = pynini.closure(self.integer + delete_space + insert_space, 0, 1)
+        self.optional_integer = pynini.closure(self.integer + delete_space_optional + insert_space, 0, 1)
         self.fractional_default = (
             pynutil.delete("fractional_part:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
@@ -54,10 +54,10 @@ class DecimalFst(GraphFst):
             self.fractional = pynini.closure(pynutil.insert("point "), 0, 1) + self.fractional_default
 
         self.quantity = (
-            delete_space
+            delete_space_optional
             + insert_space
             + pynutil.delete("quantity:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")

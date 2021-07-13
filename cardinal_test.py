@@ -10,7 +10,11 @@ class TestCardinalFst(unittest.TestCase):
         word_list = [
             "âm hai",
             "bốn lăm",
-            "chín triệu sáu trăm nghìn ba trăm hai mốt"
+            "trừ một tỷ chín triệu sáu trăm nghìn ba trăm hai mốt",
+            "trừ một tỷ chín triệu sáu trăm nghìn ba trăm hai mốt",
+            "một nghìn tỷ",
+            "một nghìn tỷ tỷ",
+            "chín trăm chín chín nghìn tỷ tỷ"
         ]
         for word in word_list:
             print(word + " | " + top_rewrite(word, self.graph))

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from nemo_text_processing.inverse_text_normalization.utils import get_abs_path
-from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_space_optional, insert_space
 
 try:
     import pynini

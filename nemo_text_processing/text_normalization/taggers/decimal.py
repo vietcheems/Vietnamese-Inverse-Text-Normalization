@@ -14,13 +14,13 @@
 # limitations under the License.
 
 from nemo_text_processing.text_normalization.data_loader_utils import get_abs_path
-from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space
+from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space_optional
 
 try:
     import pynini
     from pynini.lib import pynutil
 
-    delete_space = pynutil.delete(" ")
+    delete_space_optional = pynutil.delete(" ")
 
     PYNINI_AVAILABLE = True
 except (ModuleNotFoundError, ImportError):
@@ -76,7 +76,7 @@ class DecimalFst(GraphFst):
             pynini.cross("zero", "0")
             | graph_decimal
             | (graph_decimal | pynini.cross("o", "0"))
-            + pynini.closure(delete_space + (graph_decimal | pynini.cross("o", "0")), 1)
+            + pynini.closure(delete_space_optional + (graph_decimal | pynini.cross("o", "0")), 1)
         )
         self.graph = pynini.invert(graph_decimal).optimize()
         if not deterministic:

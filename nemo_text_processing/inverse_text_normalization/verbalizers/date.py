@@ -17,7 +17,7 @@ from nemo_text_processing.text_normalization.graph_utils import (
     NEMO_NOT_QUOTE,
     GraphFst,
     delete_extra_space,
-    delete_space,
+    delete_space_optional,
 )
 
 try:
@@ -40,24 +40,24 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="verbalize")
         month = (
             pynutil.delete("month:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
         day = (
             pynutil.delete("day:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
         )
         year = (
             pynutil.delete("year:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
         )
 
@@ -72,16 +72,16 @@ class DateFst(GraphFst):
         )
 
         optional_preserve_order = pynini.closure(
-            pynutil.delete("preserve_order:") + delete_space + pynutil.delete("true") + delete_space
+            pynutil.delete("preserve_order:") + delete_space_optional + pynutil.delete("true") + delete_space_optional
             | pynutil.delete("field_order:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + NEMO_NOT_QUOTE
             + pynutil.delete("\"")
-            + delete_space
+            + delete_space_optional
         )
 
-        final_graph = (graph_mdy | year | graph_dmy) + delete_space + optional_preserve_order
+        final_graph = (graph_mdy | year | graph_dmy) + delete_space_optional + optional_preserve_order
 
         delete_tokens = self.delete_tokens(final_graph)
         self.fst = delete_tokens.optimize()

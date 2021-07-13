@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from nemo_text_processing.text_normalization.data_loader_utils import get_abs_path
-from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_space, insert_space
+from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_space_optional, insert_space
 
 try:
     import pynini
@@ -55,7 +55,7 @@ class TelephoneFst(GraphFst):
             + pynutil.insert("\"")
         )
         optional_country_code = pynini.closure(
-            country_code + pynini.closure(pynutil.delete("-"), 0, 1) + delete_space + insert_space, 0, 1
+            country_code + pynini.closure(pynutil.delete("-"), 0, 1) + delete_space_optional + insert_space, 0, 1
         )
         number_part = (
             (
@@ -66,7 +66,7 @@ class TelephoneFst(GraphFst):
                     + digit
                     + pynutil.delete(")")
                     + pynini.closure(pynutil.delete("-"), 0, 1)
-                    + delete_space
+                    + delete_space_optional
                 )
             )
             + add_separator

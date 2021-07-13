@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space
+from nemo_text_processing.text_normalization.graph_utils import NEMO_NOT_QUOTE, GraphFst, delete_space_optional
 
 try:
     import pynini
@@ -34,17 +34,17 @@ class CardinalFst(GraphFst):
         super().__init__(name="cardinal", kind="verbalize")
         optional_sign = pynini.closure(
             pynutil.delete("negative:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + NEMO_NOT_QUOTE
             + pynutil.delete("\"")
-            + delete_space,
+            + delete_space_optional,
             0,
             1,
         )
         graph = (
             pynutil.delete("integer:")
-            + delete_space
+            + delete_space_optional
             + pynutil.delete("\"")
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete("\"")
