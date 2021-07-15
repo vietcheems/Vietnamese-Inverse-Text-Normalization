@@ -17,6 +17,7 @@ class ConsecutiveNumberFst(GraphFst):
         graph_digit_var = pynini.string_file(get_abs_path("data/numbers/digit_var.tsv"))
         graph_digit_any = graph_digit | graph_digit_var
         graph = graph_digit + pynini.closure(delete_space_optional + graph_digit_any, 1)
+        self.graph_2_or_more = graph
         graph = pynutil.insert("number: \"") + graph + pynutil.insert("\"")
         final_graph = self.add_tokens(graph)
         self.fst = final_graph.optimize()

@@ -47,6 +47,7 @@ class CardinalFst(GraphFst):
         graph_digit_any = graph_digit | graph_digit_var
         graph_digit_non_zero = graph_digit @ pynini.difference(NEMO_DIGIT, '0')
         graph_digit_any_non_zero = graph_digit_any @ pynini.difference(NEMO_DIGIT, '0')
+        self.graph_digit_any_non_zero = graph_digit_any_non_zero
 
         graph_hundred_end = pynutil.delete("trăm")
         graph_thousands_end = pynutil.delete("nghìn") | pynutil.delete("ngàn")
@@ -58,10 +59,12 @@ class CardinalFst(GraphFst):
         graph_sextillion_end = graph_thousands_end + delete_space_optional + graph_quintillion_end
 
         graph_ten = pynini.string_file(get_abs_path("data/numbers/ten.tsv")) + pynini.union(delete_space_optional + graph_digit_any, pynutil.insert("0"))
+        self.graph_ten = graph_ten
 
         graph_2_9_muoi = graph_digit_non_zero + delete_space_optional + pynini.union(
             pynutil.delete("mươi") + pynini.union(delete_space_optional + graph_digit_any, pynutil.insert("0")),
             graph_digit_any_non_zero)
+        self.graph_2_9_muoi = graph_2_9_muoi
 
         graph_hundred_component = pynini.union(graph_digit + delete_space_optional + graph_hundred_end, pynutil.insert("0"))
         graph_hundred_component += pynini.closure(delete_space_optional, 0, 1) 
