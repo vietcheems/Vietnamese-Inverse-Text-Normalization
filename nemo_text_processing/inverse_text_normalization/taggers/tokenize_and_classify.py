@@ -15,15 +15,15 @@
 
 from nemo_text_processing.inverse_text_normalization.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.taggers.fraction import FractionFst
-# from nemo_text_processing.inverse_text_normalization.taggers.date import DateFst
+from nemo_text_processing.inverse_text_normalization.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.taggers.decimal import DecimalFst
-# from nemo_text_processing.inverse_text_normalization.taggers.electronic import ElectronicFst
-# from nemo_text_processing.inverse_text_normalization.taggers.measure import MeasureFst
-# from nemo_text_processing.inverse_text_normalization.taggers.money import MoneyFst
-# from nemo_text_processing.inverse_text_normalization.taggers.ordinal import OrdinalFst
+from nemo_text_processing.inverse_text_normalization.taggers.electronic import ElectronicFst
+from nemo_text_processing.inverse_text_normalization.taggers.measure import MeasureFst
+from nemo_text_processing.inverse_text_normalization.taggers.money import MoneyFst
+from nemo_text_processing.inverse_text_normalization.taggers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.taggers.punctuation import PunctuationFst
-# from nemo_text_processing.inverse_text_normalization.taggers.telephone import TelephoneFst
-# from nemo_text_processing.inverse_text_normalization.taggers.time import TimeFst
+from nemo_text_processing.inverse_text_normalization.taggers.telephone import TelephoneFst
+from nemo_text_processing.inverse_text_normalization.taggers.time import TimeFst
 from nemo_text_processing.inverse_text_normalization.taggers.whitelist import WhiteListFst
 from nemo_text_processing.inverse_text_normalization.taggers.word import WordFst
 from nemo_text_processing.text_normalization.graph_utils import GraphFst, delete_extra_space, delete_space_optional
@@ -60,7 +60,6 @@ class ClassifyFst(GraphFst):
 
         fraction_graph = FractionFst(cardinal).fst
         # measure_graph = MeasureFst(cardinal=cardinal, decimal=decimal).fst
-        # date_graph = DateFst(ordinal=ordinal).fst
         word_graph = WordFst().fst
         # time_graph = TimeFst().fst
         # money_graph = MoneyFst(cardinal=cardinal, decimal=decimal).fst
@@ -68,13 +67,15 @@ class ClassifyFst(GraphFst):
         punct_graph = PunctuationFst().fst
         # electronic_graph = ElectronicFst().fst
         # telephone_graph = TelephoneFst().fst
-        consec_num_graph = ConsecutiveNumberFst().fst
+        consec_num = ConsecutiveNumberFst()
+        consec_num_graph = consec_num.fst
+        date_graph = DateFst(cardinal=cardinal, consec_num=consec_num).fst
 
         classify = (
             pynutil.add_weight(whitelist_graph, 1.01)
             | pynutil.add_weight(fraction_graph, 1.1)
         #     | pynutil.add_weight(time_graph, 1.1)
-        #     | pynutil.add_weight(date_graph, 1.09)
+            | pynutil.add_weight(date_graph, 1.09)
             | pynutil.add_weight(decimal_graph, 1.1)
         #     | pynutil.add_weight(measure_graph, 1.1)
             | pynutil.add_weight(cardinal_graph, 1.1)

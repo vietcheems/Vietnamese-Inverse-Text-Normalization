@@ -40,12 +40,12 @@ class DateFst(GraphFst):
 		graph_month_num |= lunar_month
 
 		graph_year_num = cardinal_graph | consec_num_graph
-		graph_year_num |= consec_num_graph + graph_2_digit
+		graph_year_num |= consec_num_graph + delete_space_compulsory + graph_2_digit
 
 		day_graph = (
 			pynutil.insert("day: \"") 
 			+ pynutil.delete("ngày ") 
-			+ pynini.closure(pynutil.delete("mồng") | pynutil.delete("mùng") + delete_space_compulsory, 0, 1)
+			+ pynini.closure((pynutil.delete("mồng") | pynutil.delete("mùng")) + delete_space_compulsory, 0, 1)
 			+ graph_day_num 
 			+ pynutil.insert("\"")
 		)
@@ -58,11 +58,13 @@ class DateFst(GraphFst):
 		)
 
 		year_graph = (
-			pynutil.insert("year :\"")
+			pynutil.insert("year: \"")
 			+ pynutil.delete("năm ")
 			+ graph_year_num
 			+ pynutil.insert("\"")
 		)
+
+		# context_graph = self._context_graph()
 
 		graph = day_graph + delete_extra_space + month_graph + delete_extra_space + year_graph
 		graph |= day_graph + delete_extra_space + month_graph
@@ -70,7 +72,22 @@ class DateFst(GraphFst):
 		graph |= day_graph
 		graph |= month_graph
 		graph |= year_graph
+		# graph |= context_graph + delete_extra_space + year_graph
 
 		final_graph = self.add_tokens(graph)
 		self.fst = final_graph.optimize()
+
+	# def _context_graph(self): FAILED
+	# 	"""
+	# 	Context for dealing with ambiguity between year and consecutive single digits
+	# 	e.g năm hai không hai hai -> năm 2022 vs 50202
+	# 	"""
+		# preceding_digit = pynini.union(
+		# 	pynini.string_file(get_abs_path("data/numbers/digit.tsv")),
+		#  	pynini.string_file(get_abs_path("data/numbers/digit_var.tsv"))
+		# )
+		# preceding_digit = pynutil.add_weight(preceding_digit, 0.1)
+
+		# context_graph = preceding_digit
+		# return context_graph
 
