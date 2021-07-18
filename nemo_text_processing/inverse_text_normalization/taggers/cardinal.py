@@ -48,6 +48,7 @@ class CardinalFst(GraphFst):
         graph_digit_non_zero = graph_digit @ pynini.difference(NEMO_DIGIT, '0')
         graph_digit_any_non_zero = graph_digit_any @ pynini.difference(NEMO_DIGIT, '0')
         self.graph_digit_any_non_zero = graph_digit_any_non_zero
+        self.graph_digit_any = graph_digit_any
 
         graph_hundred_end = pynutil.delete("trăm")
         graph_thousands_end = pynutil.delete("nghìn") | pynutil.delete("ngàn")

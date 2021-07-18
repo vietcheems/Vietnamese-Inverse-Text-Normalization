@@ -17,6 +17,8 @@ import os
 import string
 from pathlib import Path
 
+from pynini import FstLike
+
 from nemo_text_processing.text_normalization.data_loader_utils import get_abs_path
 
 try:
@@ -108,6 +110,10 @@ except (ModuleNotFoundError, ImportError):
     TO_UPPER = None
 
     PYNINI_AVAILABLE = False
+
+def optional(fst: FstLike):
+    return pynini.closure(fst, 0 , 1)
+
 
 
 def get_plurals(fst):
