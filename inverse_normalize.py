@@ -1,6 +1,13 @@
 from pynini.lib.rewrite import rewrites, top_rewrite
 import pynini
 import os
+import argparse
+
+def parse_args():
+	parser = argparse.ArgumentParser(description="Inverse normalize text")
+	parser.add_argument("input", type=str, help="input text")
+	return parser.parse_args()
+
 
 def inverse_normalize(s: str) -> str:
 	dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -12,5 +19,6 @@ def inverse_normalize(s: str) -> str:
 	return top_rewrite(token, verbalizer)
 
 if __name__ == "__main__":
-	print(inverse_normalize("một hai ba"))
+	arg = parse_args()
+	print(inverse_normalize(arg.input))
 
