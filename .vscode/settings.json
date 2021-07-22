@@ -1,4 +1,4 @@
 {
     "jupyter.jupyterServerType": "local",
-    "python.analysis.extraPaths": ["/home/viet/wfst"]
+    "terminal.integrated.env.osx": {"PYTHONPATH": "${abc}"}
 }
