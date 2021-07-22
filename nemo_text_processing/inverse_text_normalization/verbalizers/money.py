@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space_optional
+from nemo_text_processing.inverse_text_normalization.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space_compulsory
 
 try:
     import pynini
@@ -34,15 +36,16 @@ class MoneyFst(GraphFst):
         decimal: DecimalFst
     """
 
-    def __init__(self, decimal: GraphFst):
+    def __init__(self, decimal: DecimalFst, cardinal: CardinalFst):
         super().__init__(name="money", kind="verbalize")
         unit = (
             pynutil.delete("currency:")
-            + delete_space_optional
+            + delete_space_compulsory
             + pynutil.delete("\"")
             + pynini.closure(NEMO_CHAR - " ", 1)
             + pynutil.delete("\"")
         )
-        graph = unit + delete_space_optional + decimal.numbers
+        number = decimal.numbers | cardinal.numbers
+        graph = number + delete_space_compulsory + unit
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

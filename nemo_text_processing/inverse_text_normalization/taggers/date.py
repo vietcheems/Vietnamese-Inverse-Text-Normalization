@@ -23,8 +23,7 @@ class DateFst(GraphFst):
     """
 	def __init__(self, cardinal: CardinalFst, consec_num: ConsecutiveNumberFst):
 		super().__init__(name="date", kind="classify")
-		remove_dot = pynini.closure(pynini.closure(NEMO_DIGIT) + pynutil.delete(".")) + pynini.closure(NEMO_DIGIT)
-		cardinal_graph = cardinal.graph_no_exception @ remove_dot
+		cardinal_graph = cardinal.graph_no_exception_remove_dot
 		consec_num_graph = consec_num.graph_2_or_more
 		graph_2_9_muoi = cardinal.graph_2_9_muoi
 		graph_ten = cardinal.graph_ten
