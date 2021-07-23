@@ -158,7 +158,8 @@ class CardinalFst(GraphFst):
         # graph = pynini.cdrewrite(pynutil.delete("and"), NEMO_SPACE, NEMO_SPACE, NEMO_SIGMA) @ graph
 
         self.graph_no_exception = graph
-
+        remove_dot = pynini.closure(pynini.closure(NEMO_DIGIT) + pynutil.delete(".")) + pynini.closure(NEMO_DIGIT)
+        self.graph_no_exception_remove_dot = graph @ remove_dot
 
         optional_minus_graph = pynini.closure(
             pynutil.insert("negative: ") + pynini.union(pynini.cross("âm", "\"-\""), pynini.cross("trừ", "\"-\"")) + NEMO_SPACE, 0, 1
