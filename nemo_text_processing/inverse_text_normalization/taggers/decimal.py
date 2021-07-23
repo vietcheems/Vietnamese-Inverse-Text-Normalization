@@ -13,8 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import defaultdict
 from nemo_text_processing.inverse_text_normalization.utils import get_abs_path
-from nemo_text_processing.text_normalization.graph_utils import NEMO_DIGIT, GraphFst, delete_extra_space, delete_space_optional
+from nemo_text_processing.inverse_text_normalization.taggers.cardinal import CardinalFst
+from nemo_text_processing.text_normalization.graph_utils import NEMO_DIGIT, GraphFst, delete_extra_space, delete_space_optional, delete_space_compulsory
 
 try:
     import pynini
@@ -51,6 +53,15 @@ def get_quantity(decimal: 'pynini.FstLike', cardinal_up_to_hundred: 'pynini.FstL
     res = decimal + delete_extra_space + pynutil.insert("quantity: \"") + suffix + pynutil.insert("\"")
     return res
 
+def _convert_quantity(graph_1_digit, num_zeros):
+    all_num_zero_case = graph_1_digit + pynini.closure(pynutil.insert("0"), num_zeros - 1, num_zeros - 1)
+    for num_decimal in range(2, num_zeros + 1):
+        decimal = pynini.closure(graph_1_digit + delete_space_compulsory, num_decimal - 1, num_decimal - 1) + graph_1_digit
+        if num_decimal != num_zeros:
+            trailing_zero = pynini.closure(pynutil.insert("0"), num_zeros - num_decimal, num_zeros - num_decimal)
+            decimal += trailing_zero
+        all_num_zero_case |= decimal
+    return all_num_zero_case
 
 class DecimalFst(GraphFst):
     """
@@ -61,18 +72,18 @@ class DecimalFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, cardinal: GraphFst):
+    def __init__(self, cardinal: CardinalFst, keep_quantity=True):
         super().__init__(name="decimal", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
 
-        graph_decimal = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
-        graph_decimal |= pynini.string_file(get_abs_path("data/numbers/digit_var.tsv"))
+        graph_1_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
+        graph_1_digit |= pynini.string_file(get_abs_path("data/numbers/digit_var.tsv"))
 
-        graph_decimal = pynini.closure(graph_decimal + delete_space_optional) + graph_decimal
+        graph_decimal = pynini.closure(graph_1_digit + delete_space_optional) + graph_1_digit
         self.graph = graph_decimal
 
-        comma = pynutil.delete("phẩy")
+        delete_comma = pynutil.delete("phẩy")
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.union(pynini.cross("âm", "\"true\""), pynini.cross("trừ", "\"true\"")) + delete_extra_space, 0, 1
@@ -81,15 +92,62 @@ class DecimalFst(GraphFst):
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         final_graph_wo_sign = (
-            graph_integer + delete_extra_space + comma + delete_extra_space + graph_fractional
+            graph_integer + delete_extra_space + delete_comma + delete_extra_space + graph_fractional
         )
         final_graph = optional_graph_negative + final_graph_wo_sign
+        if keep_quantity:
+            self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
+                final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
+            )
+            final_graph |= optional_graph_negative + get_quantity(
+                final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
+            )
+        else:
+            quantity_dic = {}
+            with open(get_abs_path("data/numbers/quantity.tsv")) as f:
+                for row in f:
+                    items = row.split("\t")
+                    quantity_dic[items[0]] = items[1].replace("\n", "")
 
-        self.final_graph_wo_negative = final_graph_wo_sign | get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
-        )
-        final_graph |= optional_graph_negative + get_quantity(
-            final_graph_wo_sign, cardinal.graph_hundred_component_at_least_one_none_zero_digit
-        )
+            grouped_quantity = defaultdict(list)
+            for key, val in quantity_dic.items():
+                grouped_quantity[val].append(key)
+            
+            num_after_comma_list = []
+            for num_zeros in grouped_quantity.keys():
+                first = True
+                for quantity in grouped_quantity[num_zeros]:
+                    # print(quantity)
+                    if first:
+                        delete_quantity = pynutil.delete(quantity)
+                        first = False
+                    else:
+                        delete_quantity = pynini.union(delete_quantity, pynutil.delete(quantity))
+                self.test_convert_quantity = _convert_quantity(graph_1_digit, int(num_zeros))
+                num_after_comma_list.append(_convert_quantity(graph_1_digit, int(num_zeros)) + delete_space_compulsory + delete_quantity)
+                # print("num_zeros:" + num_zeros)
+                # break
+
+            first = True
+            for graph in num_after_comma_list:
+                if first:
+                    num_after_comma = graph
+                    first = False
+                else:
+                    num_after_comma |= graph
+            
+            self.num_after_comma = num_after_comma
+            graph_convert_quantity = (
+                pynutil.insert("integer_part: \"") 
+                + cardinal_graph 
+                + delete_space_compulsory 
+                + delete_comma 
+                + delete_space_compulsory 
+                + num_after_comma
+                + pynutil.insert("\"")
+            )
+            self.graph_convert_quantity = graph_convert_quantity
+            self.final_graph_wo_negative = final_graph_wo_sign | graph_convert_quantity
+            final_graph |= optional_graph_negative + graph_convert_quantity
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

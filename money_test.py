@@ -8,7 +8,7 @@ from nemo_text_processing.inverse_text_normalization.verbalizers.cardinal import
 from pynini.lib.rewrite import rewrites
 
 s = "một phẩy hai triệu bảng anh"
-tagger = T(TC(), TD(TC())).fst
+tagger = T(TC(), TD(TC(),keep_quantity=False)).fst
 verbalizer = V(decimal=VD(), cardinal=VC()).fst
 tagged = rewrites(s, tagger)[0]
 print(tagged)
