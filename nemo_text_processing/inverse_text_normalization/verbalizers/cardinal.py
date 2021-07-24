@@ -36,7 +36,7 @@ class CardinalFst(GraphFst):
             pynutil.delete("negative:")
             + delete_space_optional
             + pynutil.delete("\"")
-            + NEMO_NOT_QUOTE
+            + pynini.cross("true", "-")
             + pynutil.delete("\"")
             + delete_space_optional,
             0,

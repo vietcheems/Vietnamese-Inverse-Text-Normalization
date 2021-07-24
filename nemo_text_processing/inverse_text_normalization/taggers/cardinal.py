@@ -162,8 +162,9 @@ class CardinalFst(GraphFst):
         self.graph_no_exception_remove_dot = graph @ remove_dot
 
         optional_minus_graph = pynini.closure(
-            pynutil.insert("negative: ") + pynini.union(pynini.cross("âm", "\"-\""), pynini.cross("trừ", "\"-\"")) + NEMO_SPACE, 0, 1
+            pynutil.insert("negative: ") + pynini.union(pynini.cross("âm", "\"true\""), pynini.cross("trừ", "\"true\"")) + NEMO_SPACE, 0, 1
         )
+        self.optional_minus_graph = optional_minus_graph
         graph = optional_minus_graph + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
 
         labels_exception = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "bẩy", "tám", "chín"]
