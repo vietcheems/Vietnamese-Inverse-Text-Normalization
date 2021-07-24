@@ -42,7 +42,7 @@ class VerbalizeFst(GraphFst):
         # ordinal_graph = OrdinalFst().fst
         decimal = DecimalFst()
         decimal_graph = decimal.fst
-        # measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal).fst
+        measure_graph = MeasureFst(decimal=decimal, cardinal=cardinal).fst
         money_graph = MoneyFst(decimal=decimal, cardinal=cardinal).fst
         time_graph = TimeFst().fst
         date_graph = DateFst().fst
@@ -56,7 +56,7 @@ class VerbalizeFst(GraphFst):
             cardinal_graph
             | date_graph
             | money_graph
-            # | measure_graph
+            | measure_graph
             # | ordinal_graph
             | decimal_graph
             | time_graph

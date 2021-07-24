@@ -61,5 +61,6 @@ class DecimalFst(GraphFst):
         graph = optional_integer + optional_fractional + optional_quantity
         self.numbers = graph
         graph = optionl_sign + graph
+        self.final_graph = graph
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

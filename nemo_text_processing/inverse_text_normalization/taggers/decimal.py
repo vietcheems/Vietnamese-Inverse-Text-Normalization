@@ -149,5 +149,6 @@ class DecimalFst(GraphFst):
             self.graph_convert_quantity = graph_convert_quantity
             self.final_graph_wo_negative = final_graph_wo_sign | graph_convert_quantity
             final_graph |= optional_graph_negative + graph_convert_quantity
+        self.graph_with_negative = final_graph
         final_graph = self.add_tokens(final_graph)
         self.fst = final_graph.optimize()

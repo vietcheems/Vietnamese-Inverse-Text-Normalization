@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space_optional
+from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space_compulsory
+from nemo_text_processing.inverse_text_normalization.verbalizers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.verbalizers.decimal import DecimalFst
 
 try:
     import pynini
@@ -35,35 +37,13 @@ class MeasureFst(GraphFst):
         cardinal: CardinalFst
     """
 
-    def __init__(self, decimal: GraphFst, cardinal: GraphFst):
+    def __init__(self, decimal: DecimalFst, cardinal: CardinalFst):
         super().__init__(name="measure", kind="verbalize")
-        optional_sign = pynini.closure(pynini.cross("negative: \"true\"", "-"), 0, 1)
         unit = (
-            pynutil.delete("units:")
-            + delete_space_optional
+            pynutil.delete("unit: \"")
+            + pynini.closure(NEMO_CHAR)
             + pynutil.delete("\"")
-            + pynini.closure(NEMO_CHAR - " ", 1)
-            + pynutil.delete("\"")
-            + delete_space_optional
         )
-        graph_decimal = (
-            pynutil.delete("decimal {")
-            + delete_space_optional
-            + optional_sign
-            + delete_space_optional
-            + decimal.numbers
-            + delete_space_optional
-            + pynutil.delete("}")
-        )
-        graph_cardinal = (
-            pynutil.delete("cardinal {")
-            + delete_space_optional
-            + optional_sign
-            + delete_space_optional
-            + cardinal.numbers
-            + delete_space_optional
-            + pynutil.delete("}")
-        )
-        graph = (graph_cardinal | graph_decimal) + delete_space_optional + pynutil.insert(" ") + unit
+        graph = (cardinal.final_graph | decimal.final_graph) + delete_space_compulsory + unit
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()

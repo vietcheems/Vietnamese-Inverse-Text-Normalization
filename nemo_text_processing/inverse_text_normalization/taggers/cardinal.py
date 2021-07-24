@@ -167,6 +167,8 @@ class CardinalFst(GraphFst):
         self.optional_minus_graph = optional_minus_graph
         graph = optional_minus_graph + pynutil.insert("integer: \"") + graph + pynutil.insert("\"")
 
+        self.graph_with_negative = graph
+
         labels_exception = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "bẩy", "tám", "chín"]
         graph_exception = pynini.union(*labels_exception)
         graph = (pynini.project(graph, "input") - graph_exception.arcsort()) @ graph
