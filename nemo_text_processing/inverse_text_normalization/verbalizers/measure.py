@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space_compulsory
+from nemo_text_processing.text_normalization.graph_utils import NEMO_CHAR, GraphFst, delete_space_compulsory, NEMO_SPACE
 from nemo_text_processing.inverse_text_normalization.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.verbalizers.decimal import DecimalFst
 
@@ -44,6 +44,6 @@ class MeasureFst(GraphFst):
             + pynini.closure(NEMO_CHAR)
             + pynutil.delete("\"")
         )
-        graph = (cardinal.final_graph | decimal.final_graph) + delete_space_compulsory + unit
+        graph = (cardinal.final_graph | decimal.final_graph) + NEMO_SPACE + unit
         delete_tokens = self.delete_tokens(graph)
         self.fst = delete_tokens.optimize()
