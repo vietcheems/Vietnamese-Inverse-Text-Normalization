@@ -68,13 +68,13 @@ class CardinalFst(GraphFst):
             graph_digit_any_non_zero_no_nam)
         self.graph_2_9_muoi = graph_2_9_muoi
 
-        graph_hundred_component = pynini.union(graph_digit + delete_space_optional + graph_hundred_end, pynutil.insert("0"))
-        graph_hundred_component += pynini.closure(delete_space_optional, 0, 1) 
-        graph_hundred_component += pynini.union(
+        graph_hundred_component_no_1_digit = pynini.union(graph_digit + delete_space_optional + graph_hundred_end, pynutil.insert("0"))
+        graph_hundred_component_no_1_digit += pynini.closure(delete_space_optional, 0, 1) 
+        graph_hundred_component_no_1_digit += pynini.union(
             graph_ten | graph_2_9_muoi,
             pynini.union(pynutil.delete("linh"), 
             pynutil.delete("lẻ")) + pynutil.insert("0") + delete_space_optional + graph_digit_any | pynutil.insert("00"))
-        graph_hundred_component = pynini.union(graph_hundred_component, pynutil.insert("00") + graph_digit)
+        graph_hundred_component = pynini.union(graph_hundred_component_no_1_digit, pynutil.insert("00") + graph_digit)
         graph_hundred_component_at_least_one_digit = pynini.difference(pynini.closure(NEMO_CHAR), pynini.accep("")) @ graph_hundred_component
         
         graph_hundred_component_at_least_one_none_zero_digit = graph_hundred_component @ (
@@ -141,8 +141,9 @@ class CardinalFst(GraphFst):
             + delete_space_optional
             + graph_thousands
             + delete_space_optional
-            + graph_hundred_component
+            + graph_hundred_component_no_1_digit
         )
+        graph |= graph_digit
 
         self.graph_before_remove_zero = graph
         remove_leading_zero_graph = pynini.union(
