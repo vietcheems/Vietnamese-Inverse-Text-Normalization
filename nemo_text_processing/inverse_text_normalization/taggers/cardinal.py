@@ -62,9 +62,10 @@ class CardinalFst(GraphFst):
         graph_ten = pynini.string_file(get_abs_path("data/numbers/ten.tsv")) + pynini.union(delete_space_optional + graph_digit_any, pynutil.insert("0"))
         self.graph_ten = graph_ten
 
+        graph_digit_any_non_zero_no_nam = (pynini.project(graph_digit_any_non_zero, "input") - pynini.accep("năm")) @ graph_digit_any_non_zero
         graph_2_9_muoi = graph_digit_non_zero + delete_space_optional + pynini.union(
-            pynutil.delete("mươi") + pynini.union(delete_space_optional + graph_digit_any, pynutil.insert("0")),
-            graph_digit_any_non_zero)
+            pynutil.delete("mươi") + pynini.union(delete_space_optional + graph_digit_any_non_zero_no_nam, pynutil.insert("0")),
+            graph_digit_any_non_zero_no_nam)
         self.graph_2_9_muoi = graph_2_9_muoi
 
         graph_hundred_component = pynini.union(graph_digit + delete_space_optional + graph_hundred_end, pynutil.insert("0"))
