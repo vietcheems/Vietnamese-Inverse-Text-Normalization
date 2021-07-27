@@ -55,7 +55,6 @@ class ITNTest(unittest.TestCase):
 
     def test_measure(self):
         measure = {
-            "ba mươi phút": "30p",
             "hai mon": "2 mol",
             "5 xen ti mét trên giây": "5 cm/s",
             "hai năm": "2 năm"
@@ -81,7 +80,8 @@ class ITNTest(unittest.TestCase):
             "hai giờ rưỡi": "02h30",
             "hai giờ ba mươi": "02h30",
             "hai giờ ba mươi phút": "02h30",
-            "hai giờ hai phút hai giây": "02h02p02s"
+            "hai giờ hai phút hai giây": "02h02p02s",
+            "ba mươi phút": "30p",
         }
         for case in time.keys():
             self.assertEqual(inverse_normalize(case), time[case])

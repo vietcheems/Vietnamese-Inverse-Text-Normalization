@@ -41,7 +41,7 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="verbalize")
         unit = (
             pynutil.delete("unit: \"")
-            + pynini.closure(NEMO_CHAR)
+            + pynini.closure(NEMO_CHAR, 1, 7)
             + pynutil.delete("\"")
         )
         graph = (cardinal.final_graph | decimal.final_graph) + NEMO_SPACE + unit
