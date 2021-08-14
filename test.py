@@ -40,7 +40,8 @@ class ITNTest(unittest.TestCase):
             "năm phẩy năm triệu": "5.500.000",
             "năm nghìn bảy trăm bốn bốn phẩy bảy ba một": "5.744,731",
             "không phẩy một": "0,1",
-            "một phẩy một ba năm nghìn": "1.135"
+            "một phẩy một ba năm nghìn": "1.135",
+            "không chấm hai mươi": "0.20"
         }
         for case in decimal.keys():
             self.assertEqual(inverse_normalize(case), decimal[case])
@@ -56,7 +57,7 @@ class ITNTest(unittest.TestCase):
     def test_measure(self):
         measure = {
             "hai mon": "2 mol",
-            "5 xen ti mét trên giây": "5 cm/s",
+            "năm xen ti mét trên giây": "5 cm/s",
             "hai năm": "2 năm"
         }
         for case in measure.keys():
