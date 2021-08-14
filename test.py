@@ -36,12 +36,12 @@ class ITNTest(unittest.TestCase):
     
     def test_decimal(self):
         decimal = {
+            "không chấm hai mươi": "0.20",
             "một phẩy hai ba": "1,23",
             "năm phẩy năm triệu": "5.500.000",
             "năm nghìn bảy trăm bốn bốn phẩy bảy ba một": "5.744,731",
             "không phẩy một": "0,1",
             "một phẩy một ba năm nghìn": "1.135",
-            "không chấm hai mươi": "0.20"
         }
         for case in decimal.keys():
             self.assertEqual(inverse_normalize(case), decimal[case])
