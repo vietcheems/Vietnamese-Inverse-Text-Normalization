@@ -18,8 +18,7 @@ import os
 import time
 from argparse import ArgumentParser
 from typing import Dict
-import sys
-sys.path.append('/home/viet/Vietnamese-ITN')
+
 
 from nemo_text_processing.inverse_text_normalization.taggers.tokenize_and_classify import ClassifyFst as ITNClassifyFst
 from nemo_text_processing.inverse_text_normalization.verbalizers.verbalize_final import VerbalizeFinalFst as ITNVerbalizeFst
