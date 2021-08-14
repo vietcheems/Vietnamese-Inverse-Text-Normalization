@@ -76,11 +76,13 @@ class DecimalFst(GraphFst):
         super().__init__(name="decimal", kind="classify")
 
         cardinal_graph = cardinal.graph_no_exception
+        graph_2_9_muoi = cardinal.graph_2_9_muoi
 
         graph_1_digit = pynini.string_file(get_abs_path("data/numbers/digit.tsv"))
         graph_1_digit |= pynini.string_file(get_abs_path("data/numbers/digit_var.tsv"))
 
         graph_decimal = pynini.closure(graph_1_digit + delete_space_optional) + graph_1_digit
+        graph_decimal |= graph_2_9_muoi
         self.graph = graph_decimal
 
         delete_comma = pynutil.delete("phẩy") 
