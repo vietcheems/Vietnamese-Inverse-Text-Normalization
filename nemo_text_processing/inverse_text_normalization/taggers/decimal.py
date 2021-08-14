@@ -66,7 +66,7 @@ def _convert_quantity(graph_1_digit, num_zeros):
 class DecimalFst(GraphFst):
     """
     Finite state transducer for classifying decimal
-        e.g. minus twelve point five o o six billion -> decimal { negative: "true" integer_part: "12"  fractional_part: "5006" quantity: "billion" }
+        e.g. minus twelve point five o o six billion -> decimal { negative: "true" integer_part: "12" dot: "false" fractional_part: "5006" quantity: "billion" }
         e.g. one billion -> decimal { integer_part: "1" quantity: "billion" }
     Args:
         cardinal: CardinalFst
@@ -83,7 +83,12 @@ class DecimalFst(GraphFst):
         graph_decimal = pynini.closure(graph_1_digit + delete_space_optional) + graph_1_digit
         self.graph = graph_decimal
 
-        delete_comma = pynutil.delete("phẩy")
+        delete_comma = pynutil.delete("phẩy") 
+        delete_comma_tagged = delete_comma + pynutil.insert("dot: \"false\"")
+        delete_dot = pynutil.delete("chấm")
+        delete_dot_tagged = delete_dot + pynutil.insert("dot: \"true\"")
+        delete_fractional_sep = delete_comma | delete_dot
+        delete_fractional_sep_tagged = delete_comma_tagged | delete_dot_tagged
 
         optional_graph_negative = pynini.closure(
             pynutil.insert("negative: ") + pynini.union(pynini.cross("âm", "\"true\""), pynini.cross("trừ", "\"true\"")) + delete_extra_space, 0, 1
@@ -92,7 +97,7 @@ class DecimalFst(GraphFst):
         graph_fractional = pynutil.insert("fractional_part: \"") + graph_decimal + pynutil.insert("\"")
         graph_integer = pynutil.insert("integer_part: \"") + cardinal_graph + pynutil.insert("\"")
         final_graph_wo_sign = (
-            graph_integer + delete_extra_space + delete_comma + delete_extra_space + graph_fractional
+            graph_integer + delete_extra_space + delete_fractional_sep_tagged + delete_extra_space + graph_fractional
         )
         final_graph = optional_graph_negative + final_graph_wo_sign
         if keep_quantity:
@@ -131,19 +136,19 @@ class DecimalFst(GraphFst):
             first = True
             for graph in num_after_comma_list:
                 if first:
-                    num_after_comma = graph
+                    num_after_sep = graph
                     first = False
                 else:
-                    num_after_comma |= graph
+                    num_after_sep |= graph
             
-            self.num_after_comma = num_after_comma
+            self.num_after_comma = num_after_sep
             graph_convert_quantity = (
                 pynutil.insert("integer_part: \"") 
                 + cardinal_graph 
                 + delete_space_compulsory 
-                + delete_comma 
+                + delete_fractional_sep 
                 + delete_space_compulsory 
-                + num_after_comma
+                + num_after_sep
                 + pynutil.insert("\"")
             )
             self.graph_convert_quantity = graph_convert_quantity
