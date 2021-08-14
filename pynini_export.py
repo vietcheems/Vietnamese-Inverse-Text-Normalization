@@ -100,5 +100,7 @@ def parse_args():
 if __name__ == '__main__':
     # args = parse_args()
     output_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)) , "far")
-    print(output_dir)
-    export_grammars(output_dir=output_dir, grammars=locals()["itn_grammars"](input_case="cased"))
+    if os.path.isdir(output_dir):
+        print("delete old far folder before exporting pls")
+    else:
+        export_grammars(output_dir=output_dir, grammars=locals()["itn_grammars"](input_case="cased"))
